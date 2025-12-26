@@ -9,44 +9,36 @@
   <body>
     <main class="app">
       <header class="app__header">
-        <h1>Kindle Clippings Web Extractor</h1>
-        <p>Importa tu archivo de Kindle y exporta tus subrayados en Markdown.</p>
+        <h1>📚 Kindle Clippings</h1>
+        <p>Importa tu archivo y descarga tus subrayados en Markdown.</p>
       </header>
 
-      <section class="card" id="uploader">
-        <h2>Subir archivo</h2>
-        <div class="dropzone" id="dropzone">
-          <input type="file" id="fileInput" accept=".txt" />
-          <div class="dropzone__content">
-            <span>Arrastra y suelta tu "My Clippings.txt" aqui</span>
-            <button type="button" class="button" id="fileButton">Seleccionar archivo</button>
+      <section class="panels">
+        <div class="panel" id="uploader">
+          <h2>📥 Importar archivo</h2>
+          <div class="dropzone" id="dropzone">
+            <input type="file" id="fileInput" accept=".txt" />
+            <div class="dropzone__content">
+              <span>Arrastra y suelta tu &quot;My Clippings.txt&quot; aqui</span>
+            </div>
           </div>
+          <div class="panel__actions">
+            <button type="button" class="button" id="fileButton">Importar</button>
+            <button type="button" class="button" id="processButton" disabled>Procesar</button>
+          </div>
+          <div class="status" id="status"></div>
         </div>
-        <div class="card__footer">
-          <button type="button" class="button" id="processButton" disabled>Procesar archivo</button>
-        </div>
-        <div class="status" id="status"></div>
-      </section>
 
-      <section class="grid">
-        <div class="card" id="booksPanel">
-          <div class="card__header">
-            <h2>Libros detectados</h2>
-            <button type="button" class="button button--ghost" id="clearHistory">Limpiar historial</button>
-          </div>
+        <div class="panel" id="booksPanel">
+          <h2>✅ Libros procesados</h2>
           <div class="book-list" id="bookList">
             <p class="muted">Carga un archivo para ver los libros.</p>
           </div>
-          <div class="card__footer">
-            <button type="button" class="button" id="exportButton" disabled>Descargar Markdown</button>
+          <div class="panel__actions panel__actions--end">
+            <button type="button" class="button" id="clearSelection" disabled>Limpiar</button>
+            <button type="button" class="button" id="exportButton" disabled>Descargar</button>
           </div>
-        </div>
-
-        <div class="card" id="previewPanel">
-          <h2>Previsualizacion</h2>
-          <div id="preview">
-            <p class="muted">Selecciona un libro para ver los subrayados.</p>
-          </div>
+          <div class="status" id="selectionStatus"></div>
         </div>
       </section>
     </main>

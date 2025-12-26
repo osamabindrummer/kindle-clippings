@@ -1,6 +1,7 @@
 import { parseClippings } from '../parser/clippingsParser.js';
-import { buildMarkdown, downloadText, makeFilename } from '../export/markdownExporter.js';
-import { addHashes, clearHistory, getExistingHashes, loadHistory } from '../state/storage.js';
+import { buildMarkdown, makeFilename } from '../export/markdownExporter.js';
+import { createZip, downloadBlob } from '../export/zipExporter.js';
+import { addHashes, getExistingHashes, loadHistory } from '../state/storage.js';
 
 function hashString(value) {
   let hash = 5381;
@@ -34,9 +35,9 @@ export function initApp() {
   const processButton = document.getElementById('processButton');
   const status = document.getElementById('status');
   const bookList = document.getElementById('bookList');
-  const preview = document.getElementById('preview');
   const exportButton = document.getElementById('exportButton');
-  const clearHistoryButton = document.getElementById('clearHistory');
+  const clearSelectionButton = document.getElementById('clearSelection');
+  const selectionStatus = document.getElementById('selectionStatus');
 
   let books = [];
   let selectedBooks = new Set();
@@ -49,62 +50,37 @@ export function initApp() {
 
   function updateExportState() {
     exportButton.disabled = selectedBooks.size === 0;
+    clearSelectionButton.disabled = selectedBooks.size === 0;
+    updateSelectionStatus();
   }
 
   function updateProcessState() {
     processButton.disabled = !pendingFile;
   }
 
-  function renderPreview(book) {
-    if (!book) {
-      preview.innerHTML = '<p class="muted">Selecciona un libro para ver los subrayados.</p>';
+  function updateSelectionStatus() {
+    if (books.length === 0) {
+      selectionStatus.textContent = '';
       return;
     }
-
-    const header = `
-      <div>
-        <strong>${book.title}</strong>
-        <div class="book-item__meta">${book.author}</div>
-      </div>
-      <div class="book-item__meta">${book.newHighlights.length} nuevos</div>
-    `;
-
-    const items = book.newHighlights.length
-      ? book.newHighlights
-          .map(
-            (highlight) => `
-          <div class="preview-item">
-            <p>${highlight.text}</p>
-            <div class="preview-date">${highlight.date || 'Fecha no disponible'}</div>
-          </div>
-        `
-          )
-          .join('')
-      : '<p class="muted">No hay nuevos subrayados para este libro.</p>';
-
-    preview.innerHTML = `
-      <div class="book-item">${header}</div>
-      <div class="preview-list">${items}</div>
-    `;
+    selectionStatus.textContent = `Seleccionados ${selectedBooks.size} de ${books.length} libros.`;
   }
 
   function renderBooks() {
     if (books.length === 0) {
       bookList.innerHTML = '<p class="muted">Carga un archivo para ver los libros.</p>';
+      selectionStatus.textContent = '';
       return;
     }
 
     bookList.innerHTML = '';
     books.forEach((book) => {
-      const item = document.createElement('div');
+      const item = document.createElement('label');
       item.className = 'book-item';
 
-      const header = document.createElement('div');
-      header.className = 'book-item__header';
-
-      const title = document.createElement('div');
-      title.className = 'book-item__title';
-      title.textContent = book.title;
+      const title = document.createElement('span');
+      const author = book.author ? book.author : 'Autor desconocido';
+      title.textContent = `${book.title} (${author})`;
 
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
@@ -118,25 +94,12 @@ export function initApp() {
         updateExportState();
       });
 
-      header.appendChild(title);
-      header.appendChild(checkbox);
-
-      const meta = document.createElement('div');
-      meta.className = 'book-item__meta';
-      meta.textContent = `${book.author} · ${book.highlights.length} subrayados · ${book.newHighlights.length} nuevos`;
-
-      const previewButton = document.createElement('button');
-      previewButton.type = 'button';
-      previewButton.className = 'button button--ghost';
-      previewButton.textContent = 'Previsualizar';
-      previewButton.addEventListener('click', () => renderPreview(book));
-
-      item.appendChild(header);
-      item.appendChild(meta);
-      item.appendChild(previewButton);
+      item.appendChild(title);
+      item.appendChild(checkbox);
 
       bookList.appendChild(item);
     });
+    updateSelectionStatus();
   }
 
   function handleFile(file) {
@@ -147,7 +110,7 @@ export function initApp() {
     }
     pendingFile = file;
     updateProcessState();
-    setStatus('Archivo listo. Pulsa "Procesar archivo" para analizarlo.');
+    setStatus('Archivo listo. Pulsa "Procesar" para analizarlo.');
   }
 
   dropzone.addEventListener('dragover', (event) => {
@@ -177,7 +140,6 @@ export function initApp() {
         books = enrichBooks(parsed, history);
         selectedBooks = new Set();
         renderBooks();
-        renderPreview(null);
         updateExportState();
         setStatus(`Archivo procesado. ${books.length} libros detectados.`);
       } catch (error) {
@@ -189,39 +151,40 @@ export function initApp() {
 
   exportButton.addEventListener('click', () => {
     if (selectedBooks.size === 0) return;
-    let exported = 0;
+    const files = [];
 
     books.forEach((book) => {
       if (!selectedBooks.has(book.id)) return;
-      if (book.newHighlights.length === 0) return;
 
       const content = buildMarkdown({
         title: book.title,
         author: book.author,
-        highlights: book.newHighlights,
+        highlights: book.highlights,
       });
-      const filename = makeFilename(book);
-      downloadText(filename, content);
-      addHashes(history, book.id, book.newHighlights.map((h) => h.hash));
-      exported += 1;
+      files.push({
+        name: makeFilename(book),
+        content,
+      });
+      addHashes(history, book.id, book.highlights.map((h) => h.hash));
     });
 
+    if (files.length === 0) {
+      setStatus('No hay libros seleccionados para descargar.');
+      return;
+    }
+
+    const zip = createZip(files);
+    downloadBlob('kindle-clippings.zip', zip);
     history = loadHistory();
     books = enrichBooks(books, history);
     renderBooks();
-    setStatus(exported > 0 ? 'Exportacion completada.' : 'No hay nuevos subrayados para exportar.');
+    setStatus(`Descarga lista. Se genero un zip con ${files.length} libro(s).`);
   });
 
-  clearHistoryButton.addEventListener('click', () => {
-    if (window.confirm('Esto borrara el historial local. ¿Continuar?')) {
-      clearHistory();
-      history = loadHistory();
-      books = enrichBooks(books, history);
-      renderBooks();
-      renderPreview(null);
-      updateExportState();
-      setStatus('Historial local limpiado.');
-    }
+  clearSelectionButton.addEventListener('click', () => {
+    selectedBooks = new Set();
+    renderBooks();
+    updateExportState();
   });
 
   updateProcessState();
