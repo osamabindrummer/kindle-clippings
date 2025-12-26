@@ -1,15 +1,18 @@
 # Kindle Clippings Web Extractor
 
-Webapp offline y script local para convertir "My Clippings.txt" de Kindle a Markdown compatible con Obsidian.
-Inspirado en este video de YouTube: https://youtu.be/nFy-f9XWdqw?si=RpP8eDUA8yZXCbRF
+Webapp (online y offline) y script Python local para convertir "My Clippings.txt" de Kindle a Markdown compatible con Obsidian. Inspirado en [este video](https://youtu.be/nFy-f9XWdqw?si=RpP8eDUA8yZXCbRF) de Dann Berg.
 
-## Webapp (navegador)
+## Sitio público
+
+https://osamabindrummer.github.io/kindle-clippings/index.html
+
+## Webapp local (navegador)
 
 1. Abre Terminal.
 2. Ve a la raiz del proyecto:
 
 ```bash
-cd /Users/dsj-air/Developer/kindle-clippings
+cd /Users/dsj-x/Developer/kindle-clippings
 ```
 
 3. Levanta un servidor local:
@@ -32,7 +35,7 @@ http://localhost:8000
 2. Ve a la raiz del proyecto:
 
 ```bash
-cd /Users/dsj-air/Developer/kindle-clippings
+cd /Users/x/Developer/kindle-clippings
 ```
 
 3. Ejecuta el script:
@@ -47,8 +50,34 @@ cd /Users/dsj-air/Developer/kindle-clippings
 ~/Desktop/destacados-kindle
 ```
 
-### Salida personalizada
+### Destino personalizado
 
 ```bash
 ./script-local/extract-kindle-clippings.py "/ruta/a/My Clippings.txt" -o "/ruta/a/otra/carpeta"
+```
+
+### Alias global (zsh)
+
+1. Abre tu archivo de configuracion:
+
+```bash
+nano ~/.zshrc
+```
+
+2. Agrega el alias:
+
+```bash
+alias kindle.py="/Users/dsj-air/Developer/kindle-clippings/script-local/extract-kindle-clippings.py"
+```
+
+3. Recarga la configuracion:
+
+```bash
+source ~/.zshrc
+```
+
+4. Ejecuta el script desde cualquier carpeta:
+
+```bash
+kindle.py "/ruta/a/My Clippings.txt"
 ```
