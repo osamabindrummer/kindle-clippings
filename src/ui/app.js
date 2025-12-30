@@ -111,6 +111,12 @@ export function initApp() {
     pendingFile = file;
     updateProcessState();
     setStatus('Archivo listo. Pulsa "Procesar" para analizarlo.');
+    dropzone.classList.add('dropzone--loaded');
+    const dropzoneContent = dropzone.querySelector('.dropzone__content');
+    dropzoneContent.innerHTML = `
+      <div class="file-icon">📄</div>
+      <div class="file-name">${file.name}</div>
+    `;
   }
 
   dropzone.addEventListener('dragover', (event) => {

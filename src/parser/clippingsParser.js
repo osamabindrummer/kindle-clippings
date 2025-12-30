@@ -1,6 +1,7 @@
 const NOTE_SEPARATOR = '==========';
 const HIGHLIGHT_PATTERN = /\bhighlight\b|\bsubrayad/i;
 const DATE_PATTERN = /(?:Added on|A\u00f1adido el)\s+(.+)$/i;
+const CHAPTER_PATTERN = /\b(?:chapter|cap[ií]tulo)\s+([^|]+)/i;
 
 function parseTitleLine(line) {
   const sanitized = line.replace(/^\uFEFF/, '').trim();
@@ -18,6 +19,17 @@ function extractDate(metaLine) {
   const parts = metaLine.split('|').map((part) => part.trim());
   for (const part of parts) {
     const match = part.match(DATE_PATTERN);
+    if (match) {
+      return match[1].trim();
+    }
+  }
+  return '';
+}
+
+function extractChapter(metaLine) {
+  const parts = metaLine.split('|').map((part) => part.trim());
+  for (const part of parts) {
+    const match = part.match(CHAPTER_PATTERN);
     if (match) {
       return match[1].trim();
     }
@@ -46,9 +58,10 @@ export function parseClippings(text) {
 
     const { title, author } = parseTitleLine(titleLine);
     const date = extractDate(metaLine);
+    const chapter = extractChapter(metaLine);
 
     const textLines = lines.slice(2).filter((line) => line.length > 0);
-    const highlightText = textLines.join(' ');
+    const highlightText = textLines.join('\n');
     if (!highlightText) return;
 
     const bookId = `${title}||${author}`;
@@ -59,7 +72,7 @@ export function parseClippings(text) {
       highlights: [],
     };
 
-    book.highlights.push({ text: highlightText, date });
+    book.highlights.push({ text: highlightText, date, chapter });
     booksById.set(bookId, book);
   });
 

@@ -15,13 +15,23 @@ export function buildMarkdown(book) {
   const lines = [];
   lines.push(`# ${book.title}`);
   lines.push('');
-  lines.push(`Autor:: ${book.author}`);
+  lines.push('---');
+  lines.push(`Autor: ${book.author}`);
+  lines.push('Formato: Kindle');
+  lines.push('---');
   lines.push('');
-  lines.push('## Subrayados');
-  lines.push('');
+  let lastChapter = null;
   book.highlights.forEach((highlight) => {
-    const dateSuffix = highlight.date ? ` (Fecha: ${highlight.date})` : '';
-    lines.push(`- ${highlight.text}${dateSuffix}`);
+    if (highlight.chapter) {
+      const chapterLabel = `Capítulo ${highlight.chapter}`;
+      if (chapterLabel !== lastChapter) {
+        lines.push(`## ${chapterLabel}`);
+        lines.push('');
+        lastChapter = chapterLabel;
+      }
+    }
+    lines.push(highlight.text);
+    lines.push('');
   });
   lines.push('');
   return lines.join('\n');

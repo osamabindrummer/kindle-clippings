@@ -1,5 +1,11 @@
 # Changelog
 
+## 2025-12-30
+- Se agregó confirmación visual en el dropzone: ícono de documento y nombre del archivo cargado para confirmar la carga exitosa.
+- Se cambio el formato de exportacion a frontmatter con autor y formato Kindle, removiendo viñetas y fechas en subrayados.
+- Se preservaron saltos de linea en los subrayados para mantener listas internas cuando existan.
+- Se agrego agrupacion por capitulo cuando el metadato lo incluye, usando encabezados "## Capítulo X".
+
 ## 2025-12-26
 - Se redisenio la UI con dos paneles iguales, layout centrado y estilo minimalista inspirado en la nueva paleta.
 - Se simplifico la interfaz quitando la previsualizacion y dejando solo importacion, listado y descarga.

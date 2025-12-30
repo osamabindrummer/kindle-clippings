@@ -13,6 +13,7 @@ import sys
 NOTE_SEPARATOR = "=========="
 HIGHLIGHT_PATTERN = re.compile(r"\bhighlight\b|\bsubrayad", re.IGNORECASE)
 DATE_PATTERN = re.compile("(?:Added on|A\\u00f1adido el)\\s+(.+)$", re.IGNORECASE)
+CHAPTER_PATTERN = re.compile(r"\b(?:chapter|cap[ií]tulo)\s+([^|]+)", re.IGNORECASE)
 
 
 def parse_args():
@@ -52,6 +53,14 @@ def extract_date(meta_line):
     return ""
 
 
+def extract_chapter(meta_line):
+    for part in re.split(r"\s*\|\s*", meta_line):
+        match = CHAPTER_PATTERN.search(part)
+        if match:
+            return match.group(1).strip()
+    return ""
+
+
 def is_highlight(meta_line):
     return HIGHLIGHT_PATTERN.search(meta_line) is not None
 
@@ -80,23 +89,41 @@ def parse_clippings(text):
 
         title, author = parse_title_line(title_line)
         date = extract_date(meta_line)
-        highlight_text = " ".join([line for line in lines[2:] if line])
+        chapter = extract_chapter(meta_line)
+        highlight_text = "\n".join([line for line in lines[2:] if line])
         if not highlight_text:
             continue
 
         key = f"{title}||{author}"
         if key not in books:
             books[key] = {"title": title, "author": author, "highlights": []}
-        books[key]["highlights"].append({"text": highlight_text, "date": date})
+        books[key]["highlights"].append(
+            {"text": highlight_text, "date": date, "chapter": chapter}
+        )
 
     return list(books.values())
 
 
 def build_markdown(book):
-    lines = [f"# {book['title']}", "", f"Autor:: {book['author']}", "", "## Subrayados", ""]
+    lines = [
+        f"# {book['title']}",
+        "",
+        "---",
+        f"Autor: {book['author']}",
+        "Formato: Kindle",
+        "---",
+        "",
+    ]
+    last_chapter = None
     for highlight in book["highlights"]:
-        date_suffix = f" (Fecha: {highlight['date']})" if highlight["date"] else ""
-        lines.append(f"- {highlight['text']}{date_suffix}")
+        if highlight["chapter"]:
+            chapter_label = f"Capítulo {highlight['chapter']}"
+            if chapter_label != last_chapter:
+                lines.append(f"## {chapter_label}")
+                lines.append("")
+                last_chapter = chapter_label
+        lines.append(highlight["text"])
+        lines.append("")
     lines.append("")
     return "\n".join(lines)
 
