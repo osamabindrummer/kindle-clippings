@@ -1,5 +1,12 @@
 # Changelog
 
+## 2025-12-31
+- Se ajusto la alineacion general para mantener la app centrada horizontalmente pero mas cerca del borde superior.
+- Se habilito que el dropzone abra el selector de archivos al hacer clic, manteniendo soporte drag and drop.
+- Se agrego el boton "Prueba" para cargar y procesar automaticamente `My Clippings.txt`.
+- Se agrego el boton "Limpiar" para reiniciar la interfaz al estado inicial.
+- Se agrego un pie de pagina con enlace a "Daniel Salas J.".
+
 ## 2025-12-30
 - Se agregó confirmación visual en el dropzone: ícono de documento y nombre del archivo cargado para confirmar la carga exitosa.
 - Se cambio el formato de exportacion a frontmatter con autor y formato Kindle, removiendo viñetas y fechas en subrayados.

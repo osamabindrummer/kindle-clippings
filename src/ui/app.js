@@ -33,6 +33,8 @@ export function initApp() {
   const fileInput = document.getElementById('fileInput');
   const fileButton = document.getElementById('fileButton');
   const processButton = document.getElementById('processButton');
+  const testButton = document.getElementById('testButton');
+  const resetButton = document.getElementById('resetButton');
   const status = document.getElementById('status');
   const bookList = document.getElementById('bookList');
   const exportButton = document.getElementById('exportButton');
@@ -119,6 +121,38 @@ export function initApp() {
     `;
   }
 
+  function resetUI() {
+    books = [];
+    selectedBooks = new Set();
+    pendingFile = null;
+    fileInput.value = '';
+    dropzone.classList.remove('dropzone--loaded');
+    const dropzoneContent = dropzone.querySelector('.dropzone__content');
+    dropzoneContent.innerHTML = '<span>Arrastra y suelta tu &quot;My Clippings.txt&quot; aqui</span>';
+    renderBooks();
+    updateExportState();
+    updateProcessState();
+    setStatus('');
+  }
+
+  function processFile(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = parseClippings(reader.result);
+        books = enrichBooks(parsed, history);
+        selectedBooks = new Set();
+        renderBooks();
+        updateExportState();
+        setStatus(`Archivo procesado. ${books.length} libros detectados.`);
+      } catch (error) {
+        setStatus('No se pudo procesar el archivo. Revisa el formato.');
+      }
+    };
+    reader.readAsText(file);
+  }
+
   dropzone.addEventListener('dragover', (event) => {
     event.preventDefault();
     dropzone.classList.add('dragover');
@@ -135,25 +169,30 @@ export function initApp() {
     handleFile(file);
   });
 
+  dropzone.addEventListener('click', () => fileInput.click());
   fileButton.addEventListener('click', () => fileInput.click());
   fileInput.addEventListener('change', (event) => handleFile(event.target.files[0]));
   processButton.addEventListener('click', () => {
-    if (!pendingFile) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const parsed = parseClippings(reader.result);
-        books = enrichBooks(parsed, history);
-        selectedBooks = new Set();
-        renderBooks();
-        updateExportState();
-        setStatus(`Archivo procesado. ${books.length} libros detectados.`);
-      } catch (error) {
-        setStatus('No se pudo procesar el archivo. Revisa el formato.');
-      }
-    };
-    reader.readAsText(pendingFile);
+    processFile(pendingFile);
   });
+
+  testButton.addEventListener('click', async () => {
+    try {
+      const response = await fetch(encodeURI('./My Clippings.txt'));
+      if (!response.ok) {
+        setStatus('No se pudo cargar el archivo de prueba.');
+        return;
+      }
+      const text = await response.text();
+      const file = new File([text], 'My Clippings.txt', { type: 'text/plain' });
+      handleFile(file);
+      processFile(file);
+    } catch (error) {
+      setStatus('No se pudo cargar el archivo de prueba.');
+    }
+  });
+
+  resetButton.addEventListener('click', () => resetUI());
 
   exportButton.addEventListener('click', () => {
     if (selectedBooks.size === 0) return;

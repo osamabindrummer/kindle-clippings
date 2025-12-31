@@ -25,9 +25,9 @@ body {
   color: var(--ink);
   background: radial-gradient(1200px circle at 15% -10%, #3a322c 0%, #2d2621 45%, #1f1a16 100%);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 32px 20px 48px;
+  padding: 24px 20px 48px;
 }
 
 body::before {
@@ -97,6 +97,7 @@ body::before {
   display: grid;
   place-items: center;
   transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+  cursor: pointer;
 }
 
 .dropzone.dragover {
@@ -163,6 +164,15 @@ body::before {
   transform: translateY(-1px);
 }
 
+.button--test {
+  background: #7fb7a3;
+  color: #1e1915;
+}
+
+.button--test:hover {
+  background: #93c5b2;
+}
+
 .button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -207,6 +217,21 @@ input[type="checkbox"] {
 
 .muted {
   color: var(--muted);
+}
+
+.app__footer {
+  text-align: center;
+  margin-top: 28px;
+  font-size: 0.85rem;
+}
+
+.app__footer a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.app__footer a:hover {
+  color: var(--accent-strong);
 }
 
 @keyframes liftIn {
