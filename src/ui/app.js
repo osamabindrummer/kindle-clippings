@@ -116,7 +116,21 @@ export function initApp() {
     dropzone.classList.add('dropzone--loaded');
     const dropzoneContent = dropzone.querySelector('.dropzone__content');
     dropzoneContent.innerHTML = `
-      <div class="file-icon">📄</div>
+      <div class="file-icon" aria-hidden="true">
+        <svg viewBox="0 0 96 120" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M66 8H30c-8.837 0-16 7.163-16 16v72c0 8.837 7.163 16 16 16h44c8.837 0 16-7.163 16-16V36L66 8z"
+            fill="#f7efe2"
+            stroke="#d1b28d"
+            stroke-width="3"
+            stroke-linejoin="round"
+          />
+          <path d="M66 8v18c0 5.523 4.477 10 10 10h14L66 8z" fill="#e4d3bd" />
+          <rect x="26" y="56" width="44" height="6" rx="3" fill="#d1b28d" />
+          <rect x="26" y="72" width="36" height="6" rx="3" fill="#c0a080" />
+          <rect x="26" y="88" width="28" height="6" rx="3" fill="#a38b74" />
+        </svg>
+      </div>
       <div class="file-name">${file.name}</div>
     `;
   }

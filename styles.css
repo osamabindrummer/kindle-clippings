@@ -120,11 +120,29 @@ body::before {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 16px;
+  text-align: center;
 }
 
 .file-icon {
-  font-size: 2rem;
+  width: 84px;
+  height: 98px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.35));
+}
+
+.file-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 1024px) {
+  .file-icon {
+    width: 70px;
+    height: 84px;
+  }
 }
 
 .file-name {
@@ -137,13 +155,18 @@ body::before {
   gap: 12px;
 }
 
-.panel__actions--end {
-  margin-top: auto;
-  justify-content: flex-end;
+.panel__actions--stretch {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.panel__actions--end .button {
-  min-width: 120px;
+.panel__actions--stretch .button {
+  width: 100%;
+}
+
+.panel__actions--end {
+  margin-top: auto;
 }
 
 .button {
@@ -272,6 +295,10 @@ input[type="checkbox"] {
 
   .panel__actions {
     flex-direction: column;
+  }
+
+  .panel__actions--stretch {
+    grid-template-columns: 1fr;
   }
 
   .button {
