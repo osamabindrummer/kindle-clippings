@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-02-06
+- Se consolido la interfaz en una sola propuesta visual (opcion 1) y se eliminaron las alternativas temporales.
+- Se retiro el bloque "Laboratorio de estilos" de la interfaz.
+- Se fijo la altura de ambos paneles para mantener visibles los botones de accion.
+- Se dejo scroll interno en "Libros procesados" para listas largas sin cambiar la altura del panel.
+- Se ajusto el pie de pagina a "Desarrollado por Daniel Salas + Codex", manteniendo el enlace en Daniel Salas.
+- Se limpiaron archivos locales no necesarios (`.DS_Store`).
+
 ## 2025-12-31
 - Se ajusto la alineacion general para mantener la app centrada horizontalmente pero mas cerca del borde superior.
 - Se habilito que el dropzone abra el selector de archivos al hacer clic, manteniendo soporte drag and drop.
