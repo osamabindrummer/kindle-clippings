@@ -18,13 +18,13 @@ cd /Users/dsj-x/Developer/kindle-clippings
 3. Levanta un servidor local:
 
 ```bash
-python3 -m http.server
+python3 -m http.server 8001 --bind 127.0.0.1
 ```
 
 4. Abre en el navegador:
 
 ```
-http://localhost:8000
+http://localhost:8001
 ```
 
 5. Arrastra y suelta tu archivo "My Clippings.txt" y exporta los Markdown.
@@ -81,3 +81,7 @@ source ~/.zshrc
 ```bash
 kindle.py "/ruta/a/My Clippings.txt"
 ```
+
+## Uso en Linux
+
+[Guía para Linux](LINUX.md): instalación y apertura local desde la terminal.
